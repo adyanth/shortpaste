@@ -48,6 +48,11 @@ func (app *App) handleCreateFile(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string]string{"error": "No ID provided!", "message": "failed to retrieve id"})
 		return
 	}
+	if err := file.validate(); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("%v", err), "message": "failed"})
+		return
+	}
 
 	// Maximum upload of 10 MB files
 	r.ParseMultipartForm(10 << 20)

@@ -11,21 +11,21 @@ type App struct {
 }
 
 type Link struct {
-	ID   string `gorm:"primaryKey" json:"id"`
-	Link string `json:"link"`
+	ID   string `gorm:"primaryKey" json:"id" validate:"required,min=3,max=32,alphanumunicode"`
+	Link string `json:"link" validate:"required,url"`
 	gorm.Model
 }
 
 type File struct {
-	ID   string `gorm:"primaryKey" json:"id"`
+	ID   string `gorm:"primaryKey" json:"id" validate:"required,min=3,max=32,alphanumunicode"`
 	Name string `json:"name"`
 	MIME string
 	gorm.Model
 }
 
 type Text struct {
-	ID   string `gorm:"primaryKey" json:"id"`
-	Path string
+	ID   string `gorm:"primaryKey" json:"id" validate:"required,min=3,max=32,alphanumunicode"`
+	Type string `validate:"oneof=txt md"`
 	Text string `gorm:"-" json:"text"`
 	gorm.Model
 }

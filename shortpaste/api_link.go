@@ -37,7 +37,7 @@ func (app *App) handleGetLink(w http.ResponseWriter, r *http.Request) {
 func (app *App) handleCreateLink(w http.ResponseWriter, r *http.Request) {
 	link := Link{}
 	if err := json.NewDecoder(r.Body).Decode(&link); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
+		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("%v", err), "message": "failed"})
 		return
 	}
@@ -45,9 +45,9 @@ func (app *App) handleCreateLink(w http.ResponseWriter, r *http.Request) {
 	if id != "" && link.ID == "" {
 		link.ID = id
 	}
-	if link.ID == "" {
+	if err := link.validate(); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "No ID provided!", "message": "failed to retrieve id"})
+		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("%v", err), "message": "failed"})
 		return
 	}
 	if err := app.db.Create(&link).Error; err != nil {
