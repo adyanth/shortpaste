@@ -18,7 +18,8 @@ type Link struct {
 
 type File struct {
 	ID   string `gorm:"primaryKey" json:"id"`
-	Path string `json:"path"`
+	Name string `json:"name"`
+	MIME string
 	gorm.Model
 }
 
