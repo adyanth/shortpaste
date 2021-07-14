@@ -24,27 +24,37 @@ func (app *App) handleGetLink(w http.ResponseWriter, r *http.Request) {
 		json.NewEncoder(w).Encode(map[string][]Link{"links": links})
 	} else {
 		var link Link
-		if err := app.db.First(&link, "id = ?", id).Error; err == nil {
-			http.Redirect(w, r, link.Link, http.StatusTemporaryRedirect)
-		} else {
+		if err := app.db.First(&link, "id = ?", id).Error; err != nil {
 			w.WriteHeader(http.StatusNotFound)
 			fmt.Fprintf(w, "Link for `%s` not found!\n", id)
+			return
 		}
+
+		http.Redirect(w, r, link.Link, http.StatusTemporaryRedirect)
 	}
 }
 
 func (app *App) handleCreateLink(w http.ResponseWriter, r *http.Request) {
 	link := Link{}
 	if err := json.NewDecoder(r.Body).Decode(&link); err != nil {
-		id := strings.TrimPrefix(r.URL.Path, "/l/")
-		if id != "" && link.ID == "" {
-			link.ID = id
-		}
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("%v", err), "message": "failed"})
 		return
 	}
-	app.db.Create(&link)
+	id := strings.TrimPrefix(r.URL.Path, "/l/")
+	if id != "" && link.ID == "" {
+		link.ID = id
+	}
+	if link.ID == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		json.NewEncoder(w).Encode(map[string]string{"error": "No ID provided!", "message": "failed to retrieve id"})
+		return
+	}
+	if err := app.db.Create(&link).Error; err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("%v", err), "message": "failed to create DB entry"})
+		return
+	}
 	w.WriteHeader(http.StatusCreated)
 	json.NewEncoder(w).Encode(map[string]string{"message": "created"})
 }
