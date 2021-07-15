@@ -2,6 +2,7 @@ package shortpaste
 
 import (
 	"fmt"
+	"os"
 	"os/user"
 	"path"
 	"strings"
@@ -18,14 +19,16 @@ func (app *App) Run() {
 	app.handleRequests()
 }
 
-func NewApp(bind, dbUri, storagePath string) App {
+func NewApp(bind, storagePath string) App {
 	usr, _ := user.Current()
 	if storagePath == "~" {
 		storagePath = usr.HomeDir
 	} else if strings.HasPrefix(storagePath, "~/") {
 		storagePath = path.Join(usr.HomeDir, storagePath[2:])
 	}
+	os.MkdirAll(storagePath, 0700)
 
+	dbUri := path.Join(storagePath, "mapping.db")
 	if db, err := gorm.Open(sqlite.Open(dbUri), &gorm.Config{}); err == nil {
 		return App{
 			bind:        bind,
