@@ -25,7 +25,7 @@ type File struct {
 
 type Text struct {
 	ID   string `gorm:"primaryKey" json:"id" validate:"required,min=3,max=32,alphanumunicode"`
-	Type string `validate:"oneof=txt md"`
+	Type string `validate:"omitempty,oneof=txt md"`
 	Text string `gorm:"-" json:"text"`
 	gorm.Model
 }
