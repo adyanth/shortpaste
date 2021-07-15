@@ -43,14 +43,8 @@ func (app *App) handleGetFile(w http.ResponseWriter, r *http.Request) {
 func (app *App) handleCreateFile(w http.ResponseWriter, r *http.Request) {
 	file := File{}
 	file.ID = strings.TrimPrefix(r.URL.Path, "/f/")
-	if file.ID == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": "No ID provided!", "message": "failed to retrieve id"})
-		return
-	}
 	if err := file.validate(); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("%v", err), "message": "failed"})
+		onClientError(w, err, "check the input and try again")
 		return
 	}
 
@@ -60,8 +54,7 @@ func (app *App) handleCreateFile(w http.ResponseWriter, r *http.Request) {
 	// Get handler for filename, size and headers
 	uploadedFile, handler, err := r.FormFile("file")
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("%v", err), "message": "failed to retrieve file"})
+		onClientError(w, err, "failed to retrieve file, check if the upload completed")
 		return
 	}
 	defer uploadedFile.Close()
@@ -76,30 +69,25 @@ func (app *App) handleCreateFile(w http.ResponseWriter, r *http.Request) {
 	filePath := path.Join(app.storagePath, "files", file.ID, file.Name)
 
 	// Create folder and file
-	err = os.MkdirAll(path.Dir(filePath), 0700)
-	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("%v", err), "message": "failed to create folder"})
+	if err := os.MkdirAll(path.Dir(filePath), 0700); err != nil {
+		onServerError(w, err, "failed to create folder")
 		return
 	}
 
 	dst, err := os.Create(filePath)
 	if err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("%v", err), "message": "failed to create file handler"})
+		onServerError(w, err, "failed to create file handler")
 		return
 	}
 	defer dst.Close()
 
 	// Copy the uploaded file to the created file on the filesystem
 	if _, err := io.Copy(dst, uploadedFile); err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("%v", err), "message": "failed to copy contents to disk"})
+		onServerError(w, err, "failed to copy contents to disk")
 		return
 	}
 	if err = app.db.Create(&file).Error; err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("%v", err), "message": "failed to create DB entry"})
+		onServerError(w, err, "failed to create DB entry")
 		return
 	}
 	w.WriteHeader(http.StatusCreated)

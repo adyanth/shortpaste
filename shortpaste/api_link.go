@@ -37,8 +37,7 @@ func (app *App) handleGetLink(w http.ResponseWriter, r *http.Request) {
 func (app *App) handleCreateLink(w http.ResponseWriter, r *http.Request) {
 	link := Link{}
 	if err := json.NewDecoder(r.Body).Decode(&link); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("%v", err), "message": "failed"})
+		onClientError(w, err, "check the input and try again")
 		return
 	}
 	id := strings.TrimPrefix(r.URL.Path, "/l/")
@@ -46,13 +45,11 @@ func (app *App) handleCreateLink(w http.ResponseWriter, r *http.Request) {
 		link.ID = id
 	}
 	if err := link.validate(); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("%v", err), "message": "failed"})
+		onClientError(w, err, "check the input and try again")
 		return
 	}
 	if err := app.db.Create(&link).Error; err != nil {
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("%v", err), "message": "failed to create DB entry"})
+		onServerError(w, err, "failed to create DB entry")
 		return
 	}
 	w.WriteHeader(http.StatusCreated)
