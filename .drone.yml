@@ -1,0 +1,12 @@
+kind: pipeline
+name: default
+
+steps:
+- name: docker  
+  image: plugins/docker
+  settings:
+    username: adyanth
+    password:
+      from_secret: dockerhub_password
+    repo: adyanth/shortpaste
+    tags: latest
