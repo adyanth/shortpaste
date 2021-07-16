@@ -29,3 +29,17 @@ func onServerError(w http.ResponseWriter, err error, msg string) {
 	w.WriteHeader(http.StatusInternalServerError)
 	json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("%v", err), "message": msg})
 }
+
+//IECFormat prints bytes in the International Electrotechnical Commission format
+func IECFormat(num_in int64) string {
+	suffix := "B" //just assume bytes
+	num := float64(num_in)
+	units := []string{"", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"}
+	for _, unit := range units {
+		if num < 1024.0 {
+			return fmt.Sprintf("%3.1f%s%s", num, unit, suffix)
+		}
+		num = (num / 1024)
+	}
+	return fmt.Sprintf("%.1f%s%s", num, "Yi", suffix)
+}

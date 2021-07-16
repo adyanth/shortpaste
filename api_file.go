@@ -8,6 +8,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"text/template"
 )
 
 func (app *App) handleFile(w http.ResponseWriter, r *http.Request) {
@@ -32,11 +33,35 @@ func (app *App) handleGetFile(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "Link for `%s` not found!\n", id)
 			return
 		}
-		if _, ok := r.URL.Query()["download"]; ok || !strings.HasPrefix(file.MIME, "image/") {
-			w.Header().Set("Content-Disposition", "attachment; filename="+file.Name)
-		}
 		filePath := path.Join(app.storagePath, "files", file.ID, file.Name)
-		http.ServeFile(w, r, filePath)
+		if _, ok := r.URL.Query()["download"]; ok {
+			w.Header().Set("Content-Disposition", "attachment; filename="+file.Name)
+			http.ServeFile(w, r, filePath)
+			return
+		}
+
+		t, err := template.ParseFiles("static/file.html")
+		if err != nil {
+			onServerError(w, err, "failed to parse template")
+			return
+		}
+		fi, err := os.Stat(filePath)
+		if err != nil {
+			onServerError(w, err, "failed to get file size")
+			return
+		}
+		data := struct {
+			Name  string
+			Src   string
+			Image bool
+			Size  string
+		}{
+			Name:  file.Name,
+			Src:   "/f/" + id + "?download",
+			Image: strings.HasPrefix(file.MIME, "image/"),
+			Size:  IECFormat(fi.Size()),
+		}
+		t.Execute(w, data)
 	}
 }
 
