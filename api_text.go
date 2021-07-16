@@ -42,7 +42,7 @@ func (app *App) handleGetText(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		t, err := template.ParseFiles("static/text.html")
+		t, err := template.ParseFiles("templates/text.html")
 		if err != nil {
 			onServerError(w, err, "failed to parse template")
 			return

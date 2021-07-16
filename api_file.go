@@ -40,7 +40,7 @@ func (app *App) handleGetFile(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		t, err := template.ParseFiles("static/file.html")
+		t, err := template.ParseFiles("templates/file.html")
 		if err != nil {
 			onServerError(w, err, "failed to parse template")
 			return
