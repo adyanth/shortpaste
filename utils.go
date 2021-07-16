@@ -31,9 +31,9 @@ func onServerError(w http.ResponseWriter, err error, msg string) {
 }
 
 //IECFormat prints bytes in the International Electrotechnical Commission format
-func IECFormat(num_in int64) string {
-	suffix := "B" //just assume bytes
-	num := float64(num_in)
+func IECFormat(sizeBytes int64) string {
+	suffix := "B"
+	num := float64(sizeBytes)
 	units := []string{"", "Ki", "Mi", "Gi", "Ti", "Pi", "Ei", "Zi"}
 	for _, unit := range units {
 		if num < 1024.0 {
