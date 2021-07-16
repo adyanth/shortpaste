@@ -28,8 +28,9 @@ type File struct {
 
 // Text struct for saving the text pastes /t/.
 type Text struct {
-	ID   string `gorm:"primaryKey" json:"id" validate:"required,min=3,max=32,alphanumunicode"`
-	Type string `validate:"omitempty,oneof=txt md"`
-	Text string `gorm:"-" json:"text"`
+	ID          string `gorm:"primaryKey" json:"id" validate:"required,min=3,max=32,alphanumunicode"`
+	Type        string `validate:"omitempty,oneof=txt md"`
+	Text        string `gorm:"-" json:"text"`
+	NoHighlight bool   `json:"nohighlight"`
 	gorm.Model
 }

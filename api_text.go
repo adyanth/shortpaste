@@ -8,6 +8,7 @@ import (
 	"os"
 	"path"
 	"strings"
+	"text/template"
 )
 
 func (app *App) handleText(w http.ResponseWriter, r *http.Request) {
@@ -32,11 +33,37 @@ func (app *App) handleGetText(w http.ResponseWriter, r *http.Request) {
 			fmt.Fprintf(w, "Text for `%s` not found!\n", id)
 			return
 		}
+
+		filePath := path.Join(app.storagePath, "texts", text.ID+"."+text.Type)
+
 		if _, ok := r.URL.Query()["download"]; ok {
 			w.Header().Set("Content-Disposition", "attachment; filename="+text.ID+"."+text.Type)
+			http.ServeFile(w, r, filePath)
+			return
 		}
-		filePath := path.Join(app.storagePath, "texts", text.ID+"."+text.Type)
-		http.ServeFile(w, r, filePath)
+
+		t, err := template.ParseFiles("static/text.html")
+		if err != nil {
+			onServerError(w, err, "failed to parse template")
+			return
+		}
+		textContent, err := ioutil.ReadFile(filePath)
+		if err != nil {
+			onServerError(w, err, "failed to read text")
+			return
+		}
+		var highlight string
+		if text.NoHighlight {
+			highlight = "language-plaintext"
+		}
+		data := struct {
+			Class string
+			Text  string
+		}{
+			Class: highlight,
+			Text:  string(textContent),
+		}
+		t.Execute(w, data)
 	}
 }
 
