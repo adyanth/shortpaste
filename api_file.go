@@ -15,54 +15,58 @@ func (app *App) handleFile(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		app.handleGetFile(w, r)
-	case "POST", "PUT":
-		app.handleCreateFile(w, r)
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
+}
+
+func (app *App) handleGetFiles(w http.ResponseWriter, r *http.Request) {
+	var files []File
+	app.db.Find(&files)
+	json.NewEncoder(w).Encode(map[string][]File{"files": files})
 }
 
 func (app *App) handleGetFile(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, "/f/"), "/")
 	if id == "" {
-		var files []File
-		app.db.Find(&files)
-		json.NewEncoder(w).Encode(map[string][]File{"files": files})
-	} else {
-		var file File
-		if err := app.db.First(&file, "id = ?", id).Error; err != nil {
-			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprintf(w, "Link for `%s` not found!\n", id)
-			return
-		}
-		filePath := path.Join(app.storagePath, "files", file.ID, file.Name)
-		if _, ok := r.URL.Query()["download"]; ok {
-			w.Header().Set("Content-Disposition", "attachment; filename="+file.Name)
-			http.ServeFile(w, r, filePath)
-			return
-		}
-
-		t, err := template.ParseFiles("templates/file.html")
-		if err != nil {
-			onServerError(w, err, "failed to parse template")
-			return
-		}
-		fi, err := os.Stat(filePath)
-		if err != nil {
-			onServerError(w, err, "failed to get file size")
-			return
-		}
-		data := struct {
-			Name  string
-			Src   string
-			Image bool
-			Size  string
-		}{
-			Name:  file.Name,
-			Src:   "/f/" + id + "?download",
-			Image: strings.HasPrefix(file.MIME, "image/"),
-			Size:  IECFormat(fi.Size()),
-		}
-		t.Execute(w, data)
+		onNotFound(w, "No ID found in request")
+		return
 	}
+	var file File
+	if err := app.db.First(&file, "id = ?", id).Error; err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "Link for `%s` not found!\n", id)
+		return
+	}
+	filePath := path.Join(app.storagePath, "files", file.ID, file.Name)
+	if _, ok := r.URL.Query()["download"]; ok {
+		w.Header().Set("Content-Disposition", "attachment; filename="+file.Name)
+		http.ServeFile(w, r, filePath)
+		return
+	}
+
+	t, err := template.ParseFiles("templates/file.html")
+	if err != nil {
+		onServerError(w, err, "failed to parse template")
+		return
+	}
+	fi, err := os.Stat(filePath)
+	if err != nil {
+		onServerError(w, err, "failed to get file size")
+		return
+	}
+	data := struct {
+		Name  string
+		Src   string
+		Image bool
+		Size  string
+	}{
+		Name:  file.Name,
+		Src:   "/f/" + id + "?download",
+		Image: strings.HasPrefix(file.MIME, "image/"),
+		Size:  IECFormat(fi.Size()),
+	}
+	t.Execute(w, data)
 }
 
 func (app *App) handleCreateFile(w http.ResponseWriter, r *http.Request) {

@@ -25,6 +25,11 @@ func onClientError(w http.ResponseWriter, err error, msg string) {
 	json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("%v", err), "message": msg})
 }
 
+func onNotFound(w http.ResponseWriter, msg string) {
+	w.WriteHeader(http.StatusNotFound)
+	json.NewEncoder(w).Encode(map[string]string{"message": msg})
+}
+
 func onServerError(w http.ResponseWriter, err error, msg string) {
 	w.WriteHeader(http.StatusInternalServerError)
 	json.NewEncoder(w).Encode(map[string]string{"error": fmt.Sprintf("%v", err), "message": msg})

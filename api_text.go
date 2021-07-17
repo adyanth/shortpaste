@@ -15,56 +15,60 @@ func (app *App) handleText(w http.ResponseWriter, r *http.Request) {
 	switch r.Method {
 	case "GET":
 		app.handleGetText(w, r)
-	case "POST", "PUT":
-		app.handleCreateText(w, r)
+	default:
+		w.WriteHeader(http.StatusMethodNotAllowed)
 	}
+}
+
+func (app *App) handleGetTexts(w http.ResponseWriter, r *http.Request) {
+	var texts []Text
+	app.db.Find(&texts)
+	json.NewEncoder(w).Encode(map[string][]Text{"texts": texts})
 }
 
 func (app *App) handleGetText(w http.ResponseWriter, r *http.Request) {
 	id := strings.TrimSuffix(strings.TrimPrefix(r.URL.Path, "/t/"), "/")
 	if id == "" {
-		var texts []Text
-		app.db.Find(&texts)
-		json.NewEncoder(w).Encode(map[string][]Text{"texts": texts})
-	} else {
-		var text Text
-		if err := app.db.First(&text, "id = ?", id).Error; err != nil {
-			w.WriteHeader(http.StatusNotFound)
-			fmt.Fprintf(w, "Text for `%s` not found!\n", id)
-			return
-		}
-
-		filePath := path.Join(app.storagePath, "texts", text.ID+"."+text.Type)
-
-		if _, ok := r.URL.Query()["download"]; ok {
-			w.Header().Set("Content-Disposition", "attachment; filename="+text.ID+"."+text.Type)
-			http.ServeFile(w, r, filePath)
-			return
-		}
-
-		t, err := template.ParseFiles("templates/text.html")
-		if err != nil {
-			onServerError(w, err, "failed to parse template")
-			return
-		}
-		textContent, err := ioutil.ReadFile(filePath)
-		if err != nil {
-			onServerError(w, err, "failed to read text")
-			return
-		}
-		var highlight string
-		if text.NoHighlight {
-			highlight = "language-plaintext"
-		}
-		data := struct {
-			Class string
-			Text  string
-		}{
-			Class: highlight,
-			Text:  string(textContent),
-		}
-		t.Execute(w, data)
+		onNotFound(w, "No ID found in request")
+		return
 	}
+	var text Text
+	if err := app.db.First(&text, "id = ?", id).Error; err != nil {
+		w.WriteHeader(http.StatusNotFound)
+		fmt.Fprintf(w, "Text for `%s` not found!\n", id)
+		return
+	}
+
+	filePath := path.Join(app.storagePath, "texts", text.ID+"."+text.Type)
+
+	if _, ok := r.URL.Query()["download"]; ok {
+		w.Header().Set("Content-Disposition", "attachment; filename="+text.ID+"."+text.Type)
+		http.ServeFile(w, r, filePath)
+		return
+	}
+
+	t, err := template.ParseFiles("templates/text.html")
+	if err != nil {
+		onServerError(w, err, "failed to parse template")
+		return
+	}
+	textContent, err := ioutil.ReadFile(filePath)
+	if err != nil {
+		onServerError(w, err, "failed to read text")
+		return
+	}
+	var highlight string
+	if text.NoHighlight {
+		highlight = "language-plaintext"
+	}
+	data := struct {
+		Class string
+		Text  string
+	}{
+		Class: highlight,
+		Text:  string(textContent),
+	}
+	t.Execute(w, data)
 }
 
 func (app *App) handleCreateText(w http.ResponseWriter, r *http.Request) {
