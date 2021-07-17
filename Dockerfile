@@ -8,14 +8,13 @@ RUN go mod download
 
 COPY *.go ./
 COPY cmd cmd
-
+COPY templates ./templates
 RUN CGO_ENABLED=1 go build -o /out/ ./...
 
 FROM alpine
 
 WORKDIR /usr/local/bin/shortpaste/
 COPY --from=build /out/shortpaste .
-COPY templates ./templates
 
 EXPOSE 8080
 

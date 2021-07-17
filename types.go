@@ -1,8 +1,14 @@
 package shortpaste
 
 import (
+	"embed"
+
 	"gorm.io/gorm"
 )
+
+// Embed html templates with code
+//go:embed templates/*
+var templateFS embed.FS
 
 // App struct containing the bind address, storage path and the db connector.
 type App struct {
