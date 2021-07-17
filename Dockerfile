@@ -1,19 +1,21 @@
 FROM golang:alpine AS build
 
-WORKDIR /usr/local/go/src/git.adyanth.site/adyanth/shortpaste/main
+WORKDIR /usr/local/go/src/git.adyanth.site/adyanth/shortpaste/
 
 RUN apk add --no-cache make build-base
-COPY main/go.mod .
-COPY main/go.sum .
+COPY go.* ./
 RUN go mod download
 
-COPY main/*.go .
+COPY *.go ./
+COPY cmd cmd
 
-RUN CGO_ENABLED=1 go build -o /shortpaste
+RUN CGO_ENABLED=1 go build -o /out/ ./...
 
 FROM alpine
 
-COPY --from=build /shortpaste /
+WORKDIR /usr/local/bin/shortpaste/
+COPY --from=build /out/shortpaste .
+COPY templates ./templates
 
 EXPOSE 8080
 
