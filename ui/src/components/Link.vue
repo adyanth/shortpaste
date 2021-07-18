@@ -111,7 +111,12 @@ export default {
           link: this.link,
         }),
       })
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) {
+            throw new Error("Received response code: " + res.status);
+          }
+          res.json();
+        })
         .then((data) => {
           if (!data.error) {
             this.output = window.location.origin + "/l/" + this.id;
@@ -124,6 +129,12 @@ export default {
               " message: " +
               data.message;
           }
+          this.snackbar = true;
+        })
+        .catch((err) => {
+          this.alert = "Link generation failed with error: " + err;
+        })
+        .finally(() => {
           this.snackbar = true;
         });
     },
