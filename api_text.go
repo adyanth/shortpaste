@@ -3,6 +3,7 @@ package shortpaste
 import (
 	"encoding/json"
 	"fmt"
+	"html"
 	"io/ioutil"
 	"net/http"
 	"os"
@@ -66,7 +67,7 @@ func (app *App) handleGetText(w http.ResponseWriter, r *http.Request) {
 		Text  string
 	}{
 		Class: highlight,
-		Text:  string(textContent),
+		Text:  html.EscapeString(string(textContent)),
 	}
 	t.Execute(w, data)
 }
