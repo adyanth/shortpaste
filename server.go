@@ -7,14 +7,10 @@ import (
 	"strings"
 )
 
-func (app *App) homePage(w http.ResponseWriter, r *http.Request) {
-	fmt.Fprintf(w, "Welcome to the HomePage!")
-	fmt.Println("Endpoint Hit: homePage")
-}
-
 func (app *App) handleRequests() {
-	// Static file server?
-	http.HandleFunc("/", app.homePage)
+	// Static file server
+	fs := http.FileServer(http.Dir("./static"))
+	http.Handle("/", fs)
 	// Short links
 	http.HandleFunc("/f/", app.handleFile)
 	http.HandleFunc("/l/", app.handleLink)
