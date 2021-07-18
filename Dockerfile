@@ -28,4 +28,4 @@ COPY --from=frontend-build /ui/dist/ static/
 
 EXPOSE 8080
 
-ENTRYPOINT [ "/shortpaste" ]
+ENTRYPOINT [ "/usr/local/bin/shortpaste/shortpaste" ]
