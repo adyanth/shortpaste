@@ -4,6 +4,8 @@ name: default
 steps:
 - name: docker  
   image: plugins/docker
+  environment:
+    DOCKER_BUILDKIT: 1
   settings:
     username: adyanth
     password:
