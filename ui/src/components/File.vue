@@ -110,9 +110,11 @@ export default {
       })
         .then((res) => {
           if (!res.ok) {
-            throw new Error("Received response code: " + res.status);
+            throw new Error(
+              "response code: " + res.status + ", Incorrect response received"
+            );
           }
-          res.json();
+          return res.json();
         })
         .then((data) => {
           if (!data.error) {
