@@ -1,17 +1,37 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Text</title>
+    <title>Text {{ .ID }}</title>
     <link rel="stylesheet" href="//unpkg.com/@highlightjs/cdn-assets@11.1.0/styles/default.min.css">
     <script src="//unpkg.com/@highlightjs/cdn-assets@11.1.0/highlight.min.js"></script>
     <script>hljs.highlightAll();</script>
+    <style>
+        body {
+            font-family: Roboto, sans-serif !important;
+        }
+
+        .title {
+            font-size: 1.25rem !important;
+            font-weight: 500;
+            line-height: 2rem;
+            letter-spacing: 0.0125em !important;
+            color: #2c3e50;
+        }
+    </style>
 </head>
+
 <body>
+    <h1 class="title" style="text-align: center; margin: 2em;">
+        <a href="/" style="color: inherit;text-decoration: inherit;">Short{Paste}</a>
+    </h1>
+    <h3 class="title" style="text-align: left;">Contents of {{ .ID }}</h3>
     <pre>
         <code class="{{ .Class }}">{{ .Text }}</code>
     </pre>
 </body>
+
 </html>

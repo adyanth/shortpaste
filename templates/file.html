@@ -1,17 +1,39 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900">
+    <title>File {{ .Name }}</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Roboto, sans-serif !important;
+        }
+
+        .title {
+            font-size: 1.25rem !important;
+            font-weight: 500;
+            line-height: 2rem;
+            letter-spacing: 0.0125em !important;
+            color: #2c3e50;
+        }
+    </style>
 </head>
+
 <body>
+
+    <h1 class="title" style="margin: 2em;">
+        <a href="/" style="color: inherit;text-decoration: inherit;">Short{Paste}</a>
+    </h1>
     Click here to download: <a href="{{ .Src }}">"{{ .Name }}"</a> (Size: {{ .Size }})
-    <br/>
+    <br />
     {{ if .Image }}
-    <h3>Preview</h3>
+    <h3 class="title">Preview</h3>
     <img src="{{ .Src }}" style="border: 3px solid black;">
     {{ end }}
 </body>
+
 </html>

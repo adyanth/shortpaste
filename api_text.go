@@ -63,9 +63,11 @@ func (app *App) handleGetText(w http.ResponseWriter, r *http.Request) {
 		highlight = "language-plaintext"
 	}
 	data := struct {
+		ID    string
 		Class string
 		Text  string
 	}{
+		ID:    text.ID,
 		Class: highlight,
 		Text:  html.EscapeString(string(textContent)),
 	}
