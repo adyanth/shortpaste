@@ -41,6 +41,30 @@
         </v-row>
       </v-col>
     </v-form>
+    <v-card class="mt-12">
+      <v-card-title>
+        <v-text-field
+          v-model="search"
+          append-icon="mdi-magnify"
+          label="Search"
+          single-line
+          hide-details
+        ></v-text-field>
+      </v-card-title>
+      <v-data-table
+        :headers="headers"
+        :items="items"
+        :items-per-page="5"
+        :search="search"
+        class="elevation-1"
+        ><!-- eslint-disable-next-line -->
+        <template #item.id="{ item }">
+          <a target="_blank" :href="getLink(item.id, true)">
+            {{ item.id }}
+          </a>
+        </template>
+      </v-data-table>
+    </v-card>
     <v-overlay :value="popup" :absolute="false" :opacity="0.9">
       <OnLinkSuccess
         :output="output"
@@ -82,6 +106,28 @@ export default {
     valid: false,
     id: "",
     file: undefined,
+    search: "",
+    headers: [
+      {
+        text: "ID",
+        align: "start",
+        value: "id",
+      },
+      {
+        text: "File name",
+        value: "name",
+      },
+      {
+        text: "MIME Type",
+        value: "MIME",
+      },
+      {
+        text: "Created At",
+        value: "CreatedAt",
+        filterable: false,
+      },
+    ],
+    items: [],
     popup: false,
     output: "",
     alert: "",
@@ -97,14 +143,18 @@ export default {
       // (value) => value.size < 2000000 || "Select a valid file!", // 2 MB limit
     ],
   }),
+  mounted() {
+    setTimeout(this.updateTable, 30000);
+    this.updateTable();
+  },
   methods: {
-    async submit() {
+    submit() {
       this.generateRandom();
       console.log(this.id, this.file);
       // Call API
       const formData = new FormData();
       formData.append("file", this.file);
-      fetch("/api/v1/f/" + this.id, {
+      fetch(this.getLink(this.id), {
         method: "POST",
         body: formData,
       })
@@ -118,7 +168,7 @@ export default {
         })
         .then((data) => {
           if (!data.error) {
-            this.output = window.location.origin + "/f/" + this.id;
+            this.output = this.getLink(this.id, true);
             this.popup = true;
             this.alert = "Link generated!";
           } else {
@@ -128,7 +178,7 @@ export default {
               " message: " +
               data.message;
           }
-          this.snackbar = true;
+          this.updateTable();
         })
         .catch((err) => {
           this.alert = "Link generation failed with error: " + err;
@@ -147,6 +197,21 @@ export default {
       this.id = "";
       this.$refs.link.reset();
       this.popup = false;
+    },
+    updateTable() {
+      fetch(this.getLink())
+        .then((resp) => resp.json())
+        .then((data) => {
+          this.items = data["files"];
+        });
+    },
+    getLink(id, noapi) {
+      return (
+        window.location.origin +
+        (noapi ? "" : "/api/v1") +
+        "/f/" +
+        (id ? id : "")
+      );
     },
   },
 };
