@@ -19,16 +19,19 @@ type App struct {
 
 // Link struct for saving the Redirect Links /l/.
 type Link struct {
-	ID   string `gorm:"primaryKey" json:"id" validate:"required,min=3,max=32,alphanumunicode"`
-	Link string `json:"link" validate:"required,url"`
+	ID       string `gorm:"primaryKey" json:"id" validate:"required,min=3,max=32,alphanumunicode"`
+	Link     string `json:"link" validate:"required,url"`
+	HitCount int64  `json:"hitcount" validate:"isdefault"`
 	gorm.Model
 }
 
 // File struct for saving the file uploads /f/.
 type File struct {
-	ID   string `gorm:"primaryKey" json:"id" validate:"required,min=3,max=32,alphanumunicode"`
-	Name string `json:"name"`
-	MIME string
+	ID            string `gorm:"primaryKey" json:"id" validate:"required,min=3,max=32,alphanumunicode"`
+	Name          string `json:"name"`
+	MIME          string `validate:"isdefault"`
+	HitCount      int64  `json:"hitcount" validate:"isdefault"`
+	DownloadCount int64  `json:"downloadcount" validate:"isdefault"`
 	gorm.Model
 }
 
@@ -38,5 +41,6 @@ type Text struct {
 	Type        string `validate:"omitempty,oneof=txt md" json:"type"`
 	Text        string `gorm:"-" json:"text,omitempty"`
 	NoHighlight bool   `json:"nohighlight"`
+	HitCount    int64  `json:"hitcount" validate:"isdefault"`
 	gorm.Model
 }

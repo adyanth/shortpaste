@@ -36,6 +36,8 @@ func (app *App) handleGetLink(w http.ResponseWriter, r *http.Request) {
 	}
 
 	http.Redirect(w, r, link.Link, http.StatusTemporaryRedirect)
+	link.HitCount += 1
+	app.db.Save(&link)
 }
 
 func (app *App) handleCreateLink(w http.ResponseWriter, r *http.Request) {

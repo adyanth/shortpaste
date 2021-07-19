@@ -111,15 +111,24 @@ export default {
         text: "ID",
         align: "start",
         value: "id",
+        width: "10%",
       },
       {
         text: "Link",
         value: "link",
+        width: "50%",
+      },
+      {
+        text: "Hit Count",
+        value: "hitcount",
+        filterable: false,
+        width: "15%",
       },
       {
         text: "Created At",
         value: "CreatedAt",
         filterable: false,
+        width: "25%",
       },
     ],
     items: [],
@@ -201,7 +210,17 @@ export default {
       fetch(this.getLink())
         .then((resp) => resp.json())
         .then((data) => {
-          this.items = data["links"];
+          this.items = data["links"].map((ele) => {
+            var options = {
+              weekday: "short",
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            };
+            ele.CreatedAt = new Date(ele.CreatedAt);
+            ele.CreatedAt = ele.CreatedAt.toLocaleDateString("en-IN", options);
+            return ele;
+          });
         });
     },
     getLink(id, noapi) {

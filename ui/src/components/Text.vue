@@ -116,6 +116,7 @@ export default {
         text: "ID",
         align: "start",
         value: "id",
+        width: "20%",
       },
       {
         text: "Type",
@@ -126,9 +127,16 @@ export default {
         value: "nohighlight",
       },
       {
+        text: "Hit Count",
+        value: "hitcount",
+        filterable: false,
+        width: "15%",
+      },
+      {
         text: "Created At",
         value: "CreatedAt",
         filterable: false,
+        width: "25%",
       },
     ],
     items: [],
@@ -208,7 +216,17 @@ export default {
       fetch(this.getLink())
         .then((resp) => resp.json())
         .then((data) => {
-          this.items = data["texts"];
+          this.items = data["texts"].map((ele) => {
+            var options = {
+              weekday: "short",
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            };
+            ele.CreatedAt = new Date(ele.CreatedAt);
+            ele.CreatedAt = ele.CreatedAt.toLocaleDateString("en-IN", options);
+            return ele;
+          });
         });
     },
     getLink(id, noapi) {

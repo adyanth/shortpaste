@@ -38,10 +38,13 @@ func (app *App) handleGetFile(w http.ResponseWriter, r *http.Request) {
 		fmt.Fprintf(w, "Link for `%s` not found!\n", id)
 		return
 	}
+
 	filePath := path.Join(app.storagePath, "files", file.ID, file.Name)
 	if _, ok := r.URL.Query()["download"]; ok {
 		w.Header().Set("Content-Disposition", "attachment; filename="+file.Name)
 		http.ServeFile(w, r, filePath)
+		file.DownloadCount += 1
+		app.db.Save(&file)
 		return
 	}
 
@@ -67,6 +70,8 @@ func (app *App) handleGetFile(w http.ResponseWriter, r *http.Request) {
 		Size:  IECFormat(fi.Size()),
 	}
 	t.Execute(w, data)
+	file.HitCount += 1
+	app.db.Save(&file)
 }
 
 func (app *App) handleCreateFile(w http.ResponseWriter, r *http.Request) {

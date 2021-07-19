@@ -112,10 +112,23 @@ export default {
         text: "ID",
         align: "start",
         value: "id",
+        width: "10%",
       },
       {
         text: "File name",
         value: "name",
+        width: "30%",
+      },
+      {
+        text: "Hit Count",
+        value: "hitcount",
+        filterable: false,
+        width: "15%",
+      },
+      {
+        text: "Download Count",
+        value: "downloadcount",
+        filterable: false,
       },
       {
         text: "MIME Type",
@@ -125,6 +138,7 @@ export default {
         text: "Created At",
         value: "CreatedAt",
         filterable: false,
+        width: "25%",
       },
     ],
     items: [],
@@ -202,7 +216,17 @@ export default {
       fetch(this.getLink())
         .then((resp) => resp.json())
         .then((data) => {
-          this.items = data["files"];
+          this.items = data["files"].map((ele) => {
+            var options = {
+              weekday: "short",
+              year: "numeric",
+              month: "short",
+              day: "numeric",
+            };
+            ele.CreatedAt = new Date(ele.CreatedAt);
+            ele.CreatedAt = ele.CreatedAt.toLocaleDateString("en-IN", options);
+            return ele;
+          });
         });
     },
     getLink(id, noapi) {

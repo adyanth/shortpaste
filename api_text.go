@@ -70,6 +70,8 @@ func (app *App) handleGetText(w http.ResponseWriter, r *http.Request) {
 		Text:  html.EscapeString(string(textContent)),
 	}
 	t.Execute(w, data)
+	text.HitCount += 1
+	app.db.Save(&text)
 }
 
 func (app *App) handleCreateText(w http.ResponseWriter, r *http.Request) {
