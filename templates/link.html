@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900">
+    <title>Link {{ .ID }}</title>
+    <style>
+        body {
+            text-align: center;
+            font-family: Roboto, sans-serif !important;
+        }
+
+        .title {
+            font-size: 1.25rem !important;
+            font-weight: 500;
+            line-height: 2rem;
+            letter-spacing: 0.0125em !important;
+            color: #2c3e50;
+        }
+
+        button {
+            background-color: red;
+            border: none;
+            color: white;
+            padding: 15px 32px;
+            text-align: center;
+            /* text-decoration: none; */
+            display: inline-block;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        #stop:active {
+            transform: scale(0.98);
+            box-shadow: 3px 2px 22px 1px rgba(0, 0, 0, 0.24);
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1 class="title" style="margin: 2em;">
+        <a href="/" style="color: inherit;text-decoration: inherit;">Short{Paste}</a>
+    </h1>
+    You will be redirected to <a href="{{ .Link }}">"{{ .Link }}"</a> in <span id="sec">5</span> seconds. Click <a
+        href="{{ .Link }}">here</a>
+    if not automatically redirected.
+    <br /><br />
+    <button onclick="stop()" id="stop">Stop</button>
+    <script>
+        const x = setTimeout(() => {
+            window.location.replace("{{ .Link }}");
+        }, 5000);
+        const y = setInterval(() => {
+            span = document.getElementById("sec");
+            span.innerText = span.innerText > 0 ? span.innerText - 1 : 0;
+        }, 1000);
+        function stop() {
+            clearTimeout(x);
+            clearInterval(y);
+            document.getElementById("sec").innerText = "(stopped)"
+            document.getElementById("stop").style.background = "green";
+            document.getElementById("stop").innerText = "Stopped"
+        }
+    </script>
+</body>
+
+</html>

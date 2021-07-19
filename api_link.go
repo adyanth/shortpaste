@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"net/http"
 	"strings"
+	"text/template"
 )
 
 func (app *App) handleLink(w http.ResponseWriter, r *http.Request) {
@@ -35,7 +36,17 @@ func (app *App) handleGetLink(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	http.Redirect(w, r, link.Link, http.StatusTemporaryRedirect)
+	if app.link307Redirect {
+		http.Redirect(w, r, link.Link, http.StatusTemporaryRedirect)
+	} else {
+		t, err := template.ParseFS(templateFS, "templates/link.html")
+		if err != nil {
+			onServerError(w, err, "failed to parse template")
+			return
+		}
+		t.Execute(w, link)
+	}
+
 	link.HitCount += 1
 	app.db.Save(&link)
 }

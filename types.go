@@ -12,9 +12,10 @@ var templateFS embed.FS
 
 // App struct containing the bind address, storage path and the db connector.
 type App struct {
-	bind        string
-	db          *gorm.DB
-	storagePath string
+	bind            string
+	db              *gorm.DB
+	storagePath     string
+	link307Redirect bool
 }
 
 // Link struct for saving the Redirect Links /l/.

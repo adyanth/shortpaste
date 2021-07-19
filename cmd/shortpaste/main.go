@@ -17,6 +17,8 @@ func main() {
 		storagePath = "~/.shortpaste"
 	}
 
-	app := shortpaste.NewApp(bind, storagePath)
+	_, link307Redirect := os.LookupEnv("LINK_307_REDIRECT")
+
+	app := shortpaste.NewApp(bind, storagePath, link307Redirect)
 	app.Run()
 }
