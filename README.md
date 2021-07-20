@@ -45,23 +45,8 @@ You can customize the behaviour using enironment variables. Here is a list of co
 
 Here are some screenshots to get a taste of it :)
 
-### Links
-
-Create:
-![Link Upload](images/link.png)
-View:
-![Link View](images/link_link.png)
-
-### Text
-
-Create:
-![Text Upload](images/text.png)
-View:
-![Text View](images/text_link.png)
-
-### Files
-
-Create:
-![File Upload](images/file.png)
-View:
-![File View](images/file_link.png)
+| Type  |             Create              |                View                |
+| :---: | :-----------------------------: | :--------------------------------: |
+| Links | ![Link Upload](images/link.png) | ![Link View](images/link_link.png) |
+| Text  | ![Text Upload](images/text.png) | ![Text View](images/text_link.png) |
+| Files | ![File Upload](images/file.png) | ![File View](images/file_link.png) |
