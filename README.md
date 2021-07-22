@@ -35,11 +35,14 @@ It uses a multi-stage build consisting of three stages:
 
 You can customize the behaviour using enironment variables. Here is a list of configurable parameters.
 
-| Environment Variable | Default Value     | Behaviour                                                                                                                 |
-| -------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------------- |
-| `SP_BIND_ADDR`       | `":8080"`         | Sets the bind address inside the container.                                                                               |
-| `SP_STORAGE_PATH`    | `"~/.shortpaste"` | Sets the location for saving data inside the container                                                                    |
-| `SP_307_REDIRECT`    |                   | If this variable is set to anything, a 307 redirect will be sent instead of showing the landing page for shortened links. |
+| Environment Variable | Default Value     | Behaviour                                                                                                          |
+| -------------------- | ----------------- | ------------------------------------------------------------------------------------------------------------------ |
+| `SP_BIND_ADDR`       | `":8080"`         | Sets the bind address inside the container.                                                                        |
+| `SP_STORAGE_PATH`    | `"~/.shortpaste"` | Sets the location for saving data inside the container                                                             |
+| `SP_307_REDIRECT`    |                   | Setting this to anything causes a 307 redirect to be sent instead of showing the landing page for shortened links. |
+| `SP_USERNAME`        | `admin`           | Sets the username to login to the UI (only applies to creating resources, links will still work fine)              |
+| `SP_PASSWORD`        | `admin`           | Sets the password to login to the UI (only applies to creating resources, links will still work fine)              |
+| `SP_NOAUTH`          |                   | Setting this to anything bypasses authentication for creating resources                                            |
 
 ## Screenshots
 
