@@ -14,6 +14,11 @@ func main() {
 		bind = ":8080"
 	}
 
+	// Support for the common PORT environment variable
+	if port, ok := os.LookupEnv("PORT"); ok {
+		bind = ":" + port
+	}
+
 	if storagePath, ok = os.LookupEnv("SP_STORAGE_PATH"); !ok {
 		storagePath = "~/.shortpaste"
 	}

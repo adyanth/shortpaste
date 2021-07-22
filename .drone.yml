@@ -2,7 +2,7 @@ kind: pipeline
 name: default
 
 steps:
-- name: docker  
+- name: docker
   image: plugins/docker
   environment:
     DOCKER_BUILDKIT: 1
@@ -12,3 +12,10 @@ steps:
       from_secret: dockerhub_password
     repo: adyanth/shortpaste
     tags: latest
+
+- name: heroku
+  image: co0p/drone-heroku-plugin
+  container: adyanth/shortpaste
+  app: shortpaste
+  token:
+    from_secret: heroku_token
