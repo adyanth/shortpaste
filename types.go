@@ -18,6 +18,7 @@ type App struct {
 	link307Redirect bool
 	username        string
 	password        string
+	noAuth          bool
 }
 
 // Link struct for saving the Redirect Links /l/.

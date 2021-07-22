@@ -26,30 +26,36 @@ func (app *App) handleRequests() {
 
 func (app *App) basicAuth(next http.HandlerFunc) http.HandlerFunc {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		username, password, ok := r.BasicAuth()
-		if ok {
-			// Calculate SHA-256 hashes for the provided and expected
-			// usernames and passwords.
-			usernameHash := sha256.Sum256([]byte(username))
-			passwordHash := sha256.Sum256([]byte(password))
-			expectedUsernameHash := sha256.Sum256([]byte(app.username))
-			expectedPasswordHash := sha256.Sum256([]byte(app.password))
+		if !app.noAuth {
+			username, password, ok := r.BasicAuth()
+			if ok {
+				// Calculate SHA-256 hashes for the provided and expected
+				// usernames and passwords.
+				usernameHash := sha256.Sum256([]byte(username))
+				passwordHash := sha256.Sum256([]byte(password))
+				expectedUsernameHash := sha256.Sum256([]byte(app.username))
+				expectedPasswordHash := sha256.Sum256([]byte(app.password))
 
-			usernameMatch := (subtle.ConstantTimeCompare(usernameHash[:], expectedUsernameHash[:]) == 1)
-			passwordMatch := (subtle.ConstantTimeCompare(passwordHash[:], expectedPasswordHash[:]) == 1)
+				usernameMatch := (subtle.ConstantTimeCompare(usernameHash[:], expectedUsernameHash[:]) == 1)
+				passwordMatch := (subtle.ConstantTimeCompare(passwordHash[:], expectedPasswordHash[:]) == 1)
 
-			if usernameMatch && passwordMatch {
-				next.ServeHTTP(w, r)
-				return
+				if usernameMatch && passwordMatch {
+					next.ServeHTTP(w, r)
+					return
+				}
 			}
-		}
 
-		// If the Authentication header is not present, is invalid, or the
-		// username or password is wrong, then set a WWW-Authenticate
-		// header to inform the client that we expect them to use basic
-		// authentication and send a 401 Unauthorized response.
-		w.Header().Set("WWW-Authenticate", `Basic realm="restricted", charset="UTF-8"`)
-		http.Error(w, "Unauthorized", http.StatusUnauthorized)
+			// If the Authentication header is not present, is invalid, or the
+			// username or password is wrong, then set a WWW-Authenticate
+			// header to inform the client that we expect them to use basic
+			// authentication and send a 401 Unauthorized response.
+			w.Header().Set("WWW-Authenticate", `Basic realm="restricted", charset="UTF-8"`)
+			http.Error(w, "Unauthorized", http.StatusUnauthorized)
+		} else {
+			// If noAuth is set, bypass auth
+			next.ServeHTTP(w, r)
+			return
+		}
 	})
 }
 

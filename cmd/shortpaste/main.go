@@ -8,7 +8,7 @@ import (
 
 func main() {
 	var bind, storagePath, username, password string
-	var link307Redirect, ok bool
+	var link307Redirect, noAuth, ok bool
 
 	if bind, ok = os.LookupEnv("SP_BIND_ADDR"); !ok {
 		bind = ":8080"
@@ -20,6 +20,8 @@ func main() {
 
 	_, link307Redirect = os.LookupEnv("SP_307_REDIRECT")
 
+	_, noAuth = os.LookupEnv("SP_NOAUTH")
+
 	if username, ok = os.LookupEnv("SP_USERNAME"); !ok {
 		username = "admin"
 	}
@@ -28,6 +30,6 @@ func main() {
 		password = "admin"
 	}
 
-	app := shortpaste.NewApp(bind, storagePath, username, password, link307Redirect)
+	app := shortpaste.NewApp(bind, storagePath, username, password, noAuth, link307Redirect)
 	app.Run()
 }
