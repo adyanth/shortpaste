@@ -16,6 +16,8 @@ type App struct {
 	db              *gorm.DB
 	storagePath     string
 	link307Redirect bool
+	username        string
+	password        string
 }
 
 // Link struct for saving the Redirect Links /l/.

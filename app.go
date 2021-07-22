@@ -21,7 +21,7 @@ func (app *App) Run() {
 }
 
 // NewApp creates a new App instance with the provided bind address and storage path
-func NewApp(bind, storagePath string, link307Redirect bool) App {
+func NewApp(bind, storagePath, username, password string, link307Redirect bool) App {
 	usr, _ := user.Current()
 	if storagePath == "~" {
 		storagePath = usr.HomeDir
@@ -39,6 +39,8 @@ func NewApp(bind, storagePath string, link307Redirect bool) App {
 			db:              db,
 			storagePath:     storagePath,
 			link307Redirect: link307Redirect,
+			username:        username,
+			password:        password,
 		}
 	}
 }
