@@ -40,7 +40,7 @@ func (app *App) handleGetText(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filePath := path.Join(app.storagePath, "texts", text.ID+"."+text.Type)
+	filePath := path.Join(app.storagePath, "data", "texts", text.ID+"."+text.Type)
 
 	if _, ok := r.URL.Query()["download"]; ok {
 		w.Header().Set("Content-Disposition", "attachment; filename="+text.ID+"."+text.Type)
@@ -95,7 +95,7 @@ func (app *App) handleCreateText(w http.ResponseWriter, r *http.Request) {
 		text.Type = "txt"
 	}
 
-	filePath := path.Join(app.storagePath, "texts", text.ID+"."+text.Type)
+	filePath := path.Join(app.storagePath, "data", "texts", text.ID+"."+text.Type)
 	if err := os.MkdirAll(path.Dir(filePath), 0700); err != nil {
 		onServerError(w, err, "failed to create folder")
 		return
