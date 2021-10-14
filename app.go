@@ -30,7 +30,7 @@ func NewApp(bind, storagePath, username, password string, noAuth, link307Redirec
 	}
 	os.MkdirAll(storagePath, 0700)
 
-	dbUri := path.Join(storagePath, "mapping.db")
+	dbUri := path.Join(storagePath, "db", "mapping.db")
 	if db, err := gorm.Open(sqlite.Open(dbUri), &gorm.Config{}); err != nil {
 		panic(fmt.Errorf("db error %v", err))
 	} else {

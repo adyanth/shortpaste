@@ -39,7 +39,7 @@ func (app *App) handleGetFile(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	filePath := path.Join(app.storagePath, "files", file.ID, file.Name)
+	filePath := path.Join(app.storagePath, "data", "files", file.ID, file.Name)
 	if _, ok := r.URL.Query()["download"]; ok {
 		w.Header().Set("Content-Disposition", "attachment; filename="+file.Name)
 		http.ServeFile(w, r, filePath)
@@ -100,7 +100,7 @@ func (app *App) handleCreateFile(w http.ResponseWriter, r *http.Request) {
 	fmt.Printf("File Size: %+v\n", handler.Size)
 	fmt.Printf("MIME Header: %+v\n", handler.Header)
 
-	filePath := path.Join(app.storagePath, "files", file.ID, file.Name)
+	filePath := path.Join(app.storagePath, "data", "files", file.ID, file.Name)
 
 	// Create folder and file
 	if err := os.MkdirAll(path.Dir(filePath), 0700); err != nil {
