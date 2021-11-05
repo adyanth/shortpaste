@@ -28,7 +28,7 @@ func NewApp(bind, storagePath, username, password string, noAuth, link307Redirec
 	} else if strings.HasPrefix(storagePath, "~/") {
 		storagePath = path.Join(usr.HomeDir, storagePath[2:])
 	}
-	os.MkdirAll(storagePath, 0700)
+	os.MkdirAll(path.Join(storagePath, "db"), 0700)
 
 	dbUri := path.Join(storagePath, "db", "mapping.db")
 	if db, err := gorm.Open(sqlite.Open(dbUri), &gorm.Config{}); err != nil {
