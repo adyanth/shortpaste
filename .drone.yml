@@ -1,14 +1,15 @@
 kind: pipeline
 name: default
+type: kubernetes
 
 steps:
-- name: docker
-  image: plugins/docker
-  environment:
-    DOCKER_BUILDKIT: 1
-  settings:
-    username: adyanth
-    password:
-      from_secret: dockerhub_password
-    repo: adyanth/shortpaste
-    tags: latest
+  - name: docker
+    image: plugins/docker
+    environment:
+      DOCKER_BUILDKIT: 1
+    settings:
+      username: adyanth
+      password:
+        from_secret: dockerhub_password
+      repo: adyanth/shortpaste
+      tags: latest
