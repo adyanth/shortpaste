@@ -20,7 +20,7 @@ RUN npm install -g @vue/cli && npm install
 COPY ui ./
 RUN npm run build
 
-FROM alpine
+FROM alpine:3.15.4
 
 WORKDIR /usr/local/bin/shortpaste/
 COPY --from=backend-build /out/shortpaste .
