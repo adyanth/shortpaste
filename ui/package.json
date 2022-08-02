@@ -8,8 +8,8 @@
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
-    "core-js": "^3.23.1",
-    "vue": "^2.7.0",
+    "core-js": "^3.23.2",
+    "vue": "^2.6.11",
     "vue-material-tabs": "^0.1.5",
     "vuetify": "^2.4.0"
   },
