@@ -11,7 +11,7 @@ COPY cmd cmd
 COPY templates ./templates
 RUN CGO_ENABLED=1 go build -o /out/ ./...
 
-FROM node:lts-alpine as frontend-build
+FROM node:16.19.1-alpine3.17 as frontend-build
 
 WORKDIR /ui/
 
