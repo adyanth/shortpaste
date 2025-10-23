@@ -65,8 +65,11 @@
           <a target="_blank" :href="getLink(item.id, true)">
             {{ item.id }}
           </a>
-        </template></v-data-table
-      >
+        </template>
+        <template #item.CreatedAt="{ item }">
+            {{ formatDate(item.CreatedAt) }}
+        </template>
+      </v-data-table>
     </v-card>
     <v-overlay :value="popup" :absolute="false" :opacity="0.9">
       <OnLinkSuccess
@@ -217,14 +220,7 @@ export default {
         .then((resp) => resp.json())
         .then((data) => {
           this.items = data["texts"].map((ele) => {
-            var options = {
-              weekday: "short",
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            };
             ele.CreatedAt = new Date(ele.CreatedAt);
-            ele.CreatedAt = ele.CreatedAt.toLocaleDateString("en-IN", options);
             return ele;
           });
         });
@@ -236,6 +232,15 @@ export default {
         "/t/" +
         (id ? id : "")
       );
+    },
+    formatDate(date) {
+      const dateObj = date instanceof Date ? date : new Date(date);
+      return dateObj.toLocaleDateString('en-IN', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
     },
   },
 };

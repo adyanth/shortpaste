@@ -63,6 +63,9 @@
             {{ item.id }}
           </a>
         </template>
+        <template #item.CreatedAt="{ item }">
+            {{ formatDate(item.CreatedAt) }}
+        </template>
       </v-data-table>
     </v-card>
     <v-overlay :value="popup" :absolute="false" :opacity="0.9">
@@ -217,14 +220,7 @@ export default {
         .then((resp) => resp.json())
         .then((data) => {
           this.items = data["files"].map((ele) => {
-            var options = {
-              weekday: "short",
-              year: "numeric",
-              month: "short",
-              day: "numeric",
-            };
             ele.CreatedAt = new Date(ele.CreatedAt);
-            ele.CreatedAt = ele.CreatedAt.toLocaleDateString("en-IN", options);
             return ele;
           });
         });
@@ -236,6 +232,15 @@ export default {
         "/f/" +
         (id ? id : "")
       );
+    },
+    formatDate(date) {
+      const dateObj = date instanceof Date ? date : new Date(date);
+      return dateObj.toLocaleDateString('en-IN', {
+        weekday: 'short',
+        year: 'numeric',
+        month: 'short',
+        day: 'numeric',
+      });
     },
   },
 };
